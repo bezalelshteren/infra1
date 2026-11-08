@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: custonnmer-test1-dev
+  namespace: blackops-argocd
+spec:
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
+  namespaceResourceBlacklist:
+    - group: "*"
+      kind: ResourceQuota
+  roles:
+    - groups:
+        - group: platform-dev
+      name: admin
+      policies:
+        - p, proj:custonnmer-test1-dev:admin, applications, *, custonnmer-test1-dev/*, allow
+        - p, proj:custonnmer-test1-dev:admin, exec, create, get, custonnmer-test1-dev/*, allow
+  destinations:
+    - namespace: custonnmer-test1-*
+      name: 
+      server: https://kubernetes.default.svc
+    - name: 
+      server: https://kubernetes.default.svc
+  sourceRepos:
+    - https://github.com/bezalelshteren/monitoring-registry.git
