@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: prd1-custonnmer-test1-
+  namespace: blackops-argocd-tenants
+  labels:
+    blackops/managed: "true"
+    blackops/monitored: "true"
+    blackops/tenant: custonnmer-test1
+    blackops/part-of: "argocd"
+
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+
+  generators:
+    - git:
+        repoURL: https://github.com/example/orders-service
+        revision: master
+        directories:
+          - path: 'prd/*'
+
+  template:
+    metadata:
+      name: '{{path.basename}}'
+      labels:
+        blackops/managed: "true"
+        blackops/monitored: "true"
+        blackops/tenant: custonnmer-test1
+        blackops/part-of: '{{path.basename}}'
+
+    spec:
+      project: custonnmer-test1-prd
+      source:
+        repoURL:  https://github.com/bezalelshteren/prd1.git
+        targetRevision: master
+        path: '{{path}}'
+        directory:
+          recurse: true
+
+      destination:
+        name: prd1
+        namespace: '{{namespace}}-*'
