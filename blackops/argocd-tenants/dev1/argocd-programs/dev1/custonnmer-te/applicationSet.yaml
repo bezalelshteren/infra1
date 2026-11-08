@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: dev1-custonnmer-te-
+  namespace: blackops-argocd-tenants
+  labels:
+    blackops/managed: "true"
+    blackops/monitored: "true"
+    blackops/tenant: custonnmer-te
+    blackops/part-of: "argocd"
+
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+
+  generators:
+    - git:
+        repoURL: https://github.com/example/orders-service
+        revision: master
+        directories:
+          - path: 'dev/*'
+
+  template:
+    metadata:
+      name: '{{path.basename}}'
+      labels:
+        blackops/managed: "true"
+        blackops/monitored: "true"
+        blackops/tenant: custonnmer-te
+        blackops/part-of: '{{path.basename}}'
+
+    spec:
+      project: custonnmer-te-dev
+      source:
+        repoURL:  https://github.com/bezalelshteren/cluster-registry.git
+        targetRevision: master
+        path: '{{path}}'
+        directory:
+          recurse: true
+
+      destination:
+        name: dev1
+        namespace: '{{namespace}}-*'

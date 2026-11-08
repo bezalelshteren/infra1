@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: custonnmer-te-prd
+  namespace: blackops-argocd
+spec:
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
+  namespaceResourceBlacklist:
+    - group: "*"
+      kind: ResourceQuota
+  roles:
+    - groups:
+        - group: platform-dev
+      name: admin
+      policies:
+        - p, proj:custonnmer-te-prd:admin, applications, *, custonnmer-te-prd/*, allow
+        - p, proj:custonnmer-te-prd:admin, exec, create, get, custonnmer-te-prd/*, allow
+  destinations:
+    - namespace: custonnmer-te-*
+      name: 
+      server: https://kubernetes.default.svc
+    - name: 
+      server: https://kubernetes.default.svc
+  sourceRepos:
+    - https://github.com/bezalelshteren/prd1.git
