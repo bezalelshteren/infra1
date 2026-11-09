@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: dev1-customer-test78887-
+  namespace: blackops-argocd-tenants
+  labels:
+    blackops/managed: "true"
+    blackops/monitored: "true"
+    blackops/tenant: customer-test78887
+    blackops/part-of: "argocd"
+
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+
+  generators:
+    - git:
+        repoURL: https://github.com/customer-test/orders-service.git
+        revision: master
+        directories:
+          - path: 'dev/*'
+
+  template:
+    metadata:
+      name: '{{path.basename}}'
+      labels:
+        blackops/managed: "true"
+        blackops/monitored: "true"
+        blackops/tenant: customer-test78887
+        blackops/part-of: '{{path.basename}}'
+
+    spec:
+      project: customer-test78887-dev
+      source:
+        repoURL:   https://github.com/bezalelshteren/monitoring-registry.git
+        targetRevision: master
+        path: '{{path}}'
+        directory:
+          recurse: true
+
+      destination:
+        name: dev1
+        namespace: '{{namespace}}-*'
