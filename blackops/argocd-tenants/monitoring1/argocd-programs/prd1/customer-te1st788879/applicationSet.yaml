@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: prd1-customer-te1st788879-
+  namespace: blackops-argocd-tenants
+  labels:
+    blackops/managed: "true"
+    blackops/monitored: "true"
+    blackops/tenant: customer-te1st788879
+    blackops/part-of: "argocd"
+
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+
+  generators:
+    - git:
+        repoURL: https://github.com/customer-test/orders-service.git
+        revision: master
+        directories:
+          - path: 'prd/*'
+
+  template:
+    metadata:
+      name: '{{path.basename}}'
+      labels:
+        blackops/managed: "true"
+        blackops/monitored: "true"
+        blackops/tenant: customer-te1st788879
+        blackops/part-of: '{{path.basename}}'
+
+    spec:
+      project: customer-te1st788879-prd
+      source:
+        repoURL:   https://github.com/bezalelshteren/monitoring-registry.git
+        targetRevision: master
+        path: '{{path}}'
+        directory:
+          recurse: true
+
+      destination:
+        name: prd1
+        namespace: '{{namespace}}-*'

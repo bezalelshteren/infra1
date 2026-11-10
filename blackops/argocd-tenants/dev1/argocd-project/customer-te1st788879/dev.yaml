@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: customer-te1st788879-dev
+  namespace: blackops-argocd
+spec:
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
+  namespaceResourceBlacklist:
+    - group: "*"
+      kind: ResourceQuota
+  roles:
+    - groups:
+        - group: platform-dev
+      name: admin
+      policies:
+        - p, proj:customer-te1st788879-dev:admin, applications, *, customer-te1st788879-dev/*, allow
+        - p, proj:customer-te1st788879-dev:admin, exec, create, get, customer-te1st788879-dev/*, allow
+  destinations:
+    - namespace: customer-te1st788879-*
+      name: 
+      server: https://kubernetes.default.svc
+    - name: 
+      server: https://kubernetes.default.svc
+  sourceRepos:
+    - https://github.com/bezalelshteren/cluster-registry.git
